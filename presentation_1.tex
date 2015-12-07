@@ -1,0 +1,320 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Beamer Presentation
+% LaTeX Template
+% Version 1.0 (10/11/12)
+%
+% This template has been downloaded from:
+% http://www.LaTeXTemplates.com
+%
+% License:
+% CC BY-NC-SA 3.0 (http://creativecommons.org/licenses/by-nc-sa/3.0/)
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND THEMES
+%----------------------------------------------------------------------------------------
+
+\documentclass{beamer}
+
+\mode<presentation> {
+
+% The Beamer class comes with a number of default slide themes
+% which change the colors and layouts of slides. Below this is a list
+% of all the themes, uncomment each in turn to see what they look like.
+
+%\usetheme{default}
+%\usetheme{AnnArbor}
+%\usetheme{Antibes}
+%\usetheme{Bergen}
+%\usetheme{Berkeley}
+%\usetheme{Berlin}
+%\usetheme{Boadilla}
+%\usetheme{CambridgeUS}
+%\usetheme{Copenhagen}
+%\usetheme{Darmstadt}
+%\usetheme{Dresden}
+%\usetheme{Frankfurt}
+%\usetheme{Goettingen}
+%\usetheme{Hannover}
+%\usetheme{Ilmenau}
+%\usetheme{JuanLesPins}
+%\usetheme{Luebeck}
+\usetheme{Madrid}
+%\usetheme{Malmoe}
+%\usetheme{Marburg}
+%\usetheme{Montpellier}
+%\usetheme{PaloAlto}
+%\usetheme{Pittsburgh}
+%\usetheme{Rochester}
+%\usetheme{Singapore}
+%\usetheme{Szeged}
+%\usetheme{Warsaw}
+
+% As well as themes, the Beamer class has a number of color themes
+% for any slide theme. Uncomment each of these in turn to see how it
+% changes the colors of your current slide theme.
+
+%\usecolortheme{albatross}
+%\usecolortheme{beaver}
+%\usecolortheme{beetle}
+%\usecolortheme{crane}
+%\usecolortheme{dolphin}
+%\usecolortheme{dove}
+%\usecolortheme{fly}
+%\usecolortheme{lily}
+%\usecolortheme{orchid}
+%\usecolortheme{rose}
+%\usecolortheme{seagull}
+%\usecolortheme{seahorse}
+%\usecolortheme{whale}
+%\usecolortheme{wolverine}
+
+%\setbeamertemplate{footline} % To remove the footer line in all slides uncomment this line
+%\setbeamertemplate{footline}[page number] % To replace the footer line in all slides with a simple slide count uncomment this line
+
+%\setbeamertemplate{navigation symbols}{} % To remove the navigation symbols from the bottom of all slides uncomment this line
+}
+
+\usepackage{graphicx} % Allows including images
+\usepackage{booktabs} % Allows the use of \toprule, \midrule and \bottomrule in tables
+\usepackage{lmodern}
+
+%----------------------------------------------------------------------------------------
+%	TITLE PAGE
+%----------------------------------------------------------------------------------------
+
+\title[CSE469]{Data Mining in Dota 2} % The short title appears at the bottom of every slide, the full title is only on the title page
+
+\author{Samina Khan} % Your name
+\institute[UB] % Your institution as it will appear on the bottom of every slide, may be shorthand to save space
+{
+University at Buffalo \\ % Your institution for the title page
+\medskip
+\textit{saminakh@buffalo.edu} % Your email address
+}
+\date{\today} % Date, can be changed to a custom date
+
+\begin{document}
+
+\begin{frame}
+\titlepage % Print the title page as the first slide
+\end{frame}
+
+\begin{frame}
+\frametitle{Overview} % Table of contents slide, comment this block out to remove it
+\tableofcontents % Throughout your presentation, if you choose to use \section{} and \subsection{} commands, these will automatically be printed on this slide as an overview of your presentation
+\end{frame}
+
+%----------------------------------------------------------------------------------------
+%	PRESENTATION SLIDES
+%----------------------------------------------------------------------------------------
+
+%------------------------------------------------
+ % Sections can be created in order to organize your presentation into discrete blocks, all sections and subsections are automatically printed in the table of contents as an overview of the talk
+
+%------------------------------------------------
+\section{Introduction}
+%------------------------------------------------
+
+\begin{frame}
+\frametitle{Introduction}
+Dota 2 is a multiplayer online game, where matches are played between two teams of five players controlling their own hero chosen at the start of the match. Each hero has a unique set of skills, starting attributes and attribute gain rates, resulting in different strengths and weaknesses for a hero. As a result, match outcomes are not only dependent on the mechanical abilities of a player, but on team composition and hero synergy as well. 
+\end{frame}
+
+%------------------------------------------------
+
+\begin{frame}
+\frametitle{Introduction}
+\begin{block}{Problem}
+By looking at the team composition of the winning teams in matches, we can identify pairs of heroes that synergize well together. We can also identify "counterpicks," where the choosing of a hero significantly reduces the viability of a hero on the opposite team. 
+\end{block}
+
+\begin{table}
+\begin{tabular}{l l}
+\toprule
+\textbf{Combos} & \textbf{Counterpicks}\\
+\midrule
+Bane + Mirana & Dazzle + Legion Commander\\
+Tiny + Wisp & Doom + Storm Spirit\\
+\bottomrule
+\end{tabular}
+\caption{Hero pick and counterpick examples}
+\end{table}
+\end{frame}
+
+%------------------------------------------------
+
+\begin{frame}
+\frametitle{Introduction}
+\begin{block}{Impact}
+With this project, we are aiming to identify successful combo picks as well as popular counter picks in the current Dota 2 meta. This could allow players to 
+\begin{itemize}
+\item learn of popular combos and counter picks in higher skill brackets
+\item learn how to anticipate and play around them
+\end{itemize}
+\end{block}
+\end{frame}
+
+%------------------------------------------------
+\section{Formulation}
+%------------------------------------------------
+\begin{frame}
+\frametitle{Formulation}
+\begin{block}{Task}
+Teams in Dota 2 are composed of five distinct heroes each, selected from a pool of over 100 heroes. Identifying pairs of heroes often picked or counterpicked together is similar to finding items found together frequently in a transaction. Thus, the apriori algorithm was expected to suit the task.\\
+\begin{itemize}
+\item Input: list of matches, with each match indicating the heroes selected
+\item Output: list of heroes picked together above the required threshold
+\end{itemize}
+\end{block}
+\end{frame}
+
+%------------------------------------------------
+\section{Datasets}
+%------------------------------------------------
+
+\begin{frame}
+\frametitle{Datasets}
+\begin{block}{Valve Web API}
+Dota 2 public matches are available in .json format, which can be obtained by registering an API key with Valve. The .json returned includes
+\begin{itemize}
+	\item The match ID
+	\item A .json array of the player accounts and their selected hero
+	\item Lobby type (ie 1v1, Ranked, etc.)
+\end{itemize}
+\end{block}
+\begin{block}{Queries}
+There are also options that can be included in the query to limit the results, such as
+\begin{itemize}
+	\item skill= (0 is any skill bracket, 0 is normal, 1 is high, 2 is very high)
+	\item start\_at\_match\_id= (allows you to start the list list of matches at a particular one)
+\end{itemize}
+\end{block}
+\end{frame}
+
+%------------------------------------------------
+
+\begin{frame}
+\frametitle{Datasets}
+
+\begin{block}{Collecting Data}
+I chose to use Java to periodically query the Valve servers and save the relevant matches to a text file. There were multiple things that had to be taken into consideration when deciding what matches to use:
+\begin{itemize}
+	\item Only using matches from high and very high skill brackets - Dota 2 has a bot problem with farming items in lower brackets. By only looking at matches in high and very high brackets, we avoid including bot matches in the data
+	\item Only using ranked matches - this filters out 1v1 matches and custom matches and maps
+	\item Discarding matches with any player having a hero ID of 0 - a 0 indicates a player that abandoned before choosing a hero
+\end{itemize}
+\end{block}
+
+\end{frame}
+%------------------------------------------------
+\section{Algorithm}
+%------------------------------------------------
+
+\begin{frame}
+\frametitle{Algorithm}
+\begin{block}{Apriori Algorithm}
+I decided to use the apriori algorithm to analyze the data, as selecting heroes and finding rules to represent heroes commonly selected together is very similar to the process of items selected together in a transaction. 
+\begin{itemize}
+	\item Each hero represented an `item' out of a pool of 112 heroes
+	\item Each team was treated as a single transaction in the case of determining combos, while the enemy and ally team were considered a single transaction for counterpicks
+	\item For combos, this was about 6000 high to very high skill bracket matches, with 3000 for counterpicks
+	\item The numbers returned are the hero id (an int from 1-112) which can be looked up using Valve's web api
+\end{itemize}
+\end{block}
+
+\end{frame}
+%------------------------------------------------
+\section{Experiments}
+%------------------------------------------------
+
+\begin{frame}
+\frametitle{Experiments}
+\begin{block}{Combos}
+Running the apriori algorithm on the combos dataset yielded the results below. The picks were dominated by Shadow Fiend, Juggernaut, Pudge, Invoker, Windranger and Emberspirit. In addition, Anti-mage, Earthshaker, Bounty Hunter and Tusk were very popular. 
+\end{block}
+\begin{table}
+\begin{tabular}{l l l l l l l l l l l l l l l l l}
+\toprule
+1 & 7 & 8 & 8 & 8 & 11 & 11 & 11 & 11 & 11 & 14 & 14 & 21 & 21\\
+74 & 11 & 11 & 21 & 74 & 14 & 21 & 62 & 100 & 106 & 21 & 74 & 74 & 106 \\
+\bottomrule
+\end{tabular}
+\caption{Counterpick L2}
+\end{table}
+\end{frame}
+
+%------------------------------------------------
+\begin{frame}
+\frametitle{Experiments}
+
+\begin{block}{Counterpicks}
+Running the apriori algorithm on the counterpicks dataset yielded the results below; as with the combo picks, the counterpick heroes were primarily Shadow Fiend, Juggernaut, Pudge, Windranger, QoP, Invoker, and Ember Spirit.
+\end{block}
+
+\begin{table}
+\begin{tabular}{l l l l l l l l l l l l l}
+\toprule
+11 & 11 & 11 & 11 & 11 & 11 & 14 & 21 & 74 & 74\\
+8 & 14 & 21 & 39 & 74 & 106 & 21 & 11 & 11 & 14 \\
+\bottomrule
+\end{tabular}
+\caption{Counterpick L2}
+\end{table}
+\end{frame}
+
+%------------------------------------------------
+\begin{frame}
+\frametitle{Experiments}
+\begin{block}{Results}
+Counter to my expectations, it appears that in the high and very high skill brackets for ranked matchmaking, players do not attempt to combo with their allies or counterpick their enemies. Rather, they pick heroes that are popular in the current meta and rarely seem to deviate from those standard picks.
+\end{block}
+\end{frame}
+
+%------------------------------------------------
+\begin{frame}
+\frametitle{Experiments}
+\begin{block}{Potential Explanations}
+These results were intially surprising, but are certainly a reasonable outcome given the selected data. 
+\begin{itemize}
+	\item Perhaps non-ranked matches would have resulted in a larger variety of picks, where there is less at stake (and thus more experimentation in strategy and combos)
+	\item A lower skill bracket, assuming bot matches were detected and removed from the sample data, may also have a larger variety of picks where ``sticking to the meta'' isn't as common
+	\item Maybe balancing in the game has gotten to the point where cheesy combos or explicit counterpicks just aren't as successful as they used to be
+\end{itemize}
+\end{block}
+\end{frame}
+
+%------------------------------------------------
+\section{Challenges}
+%------------------------------------------------
+\begin{frame}
+\frametitle{Challenges}
+\begin{block}{Valve Web API}
+\begin{itemize}
+	\item Some queries did not work correctly (such as match mode, which would have allowed me to use non-ranked while still avoiding 1v1s)
+	\item Json data returned was not complete, and to get additional match information would require more queries
+	\item Only returns the most recent 25 matches, have to use workaround to get later matches (and it dosen't work very well)
+\end{itemize}
+\end{block}
+\begin{block}{Personal challenges}
+I am not proficient with MySQL or any other database software (other than Realm, which is Android-only). Having database knowledge for saving match history would have helped immensely, but because I did not, I had to save the matches to a text file and load a hashset of (int, int[]) pairs of the match ID and hero IDs each time I opened the program to avoid adding duplicate matches. 
+\end{block}
+\end{frame}
+
+%------------------------------------------------
+\section{Links}
+%------------------------------------------------
+
+\begin{frame}
+\frametitle{Links}
+\begin{itemize}
+	\item Github for code: \url{https://github.com/saminakh/CSE469}
+	\item Dota 2 dev forums for web api: \url{http://dev.dota2.com/showthread.php?t=58317}
+	\item Github for interesting machine learning project and paper on a Dota 2 counterpicking tool: \url{https://github.com/kevincon}
+\end{itemize}
+\end{frame}
+
+%----------------------------------------------------------------------------------------
+
+\end{document} 
